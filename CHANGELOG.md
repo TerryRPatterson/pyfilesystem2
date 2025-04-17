@@ -21,6 +21,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
   ([#535](https://github.com/PyFilesystem/pyfilesystem2/issues/535)).
 - Fixed a bug where files could be truncated or deleted when moved / copied onto itself.
   Closes [#546](https://github.com/PyFilesystem/pyfilesystem2/issues/546)
+- Change documentation to use `myst_parser` instead of the deprecated
+  `recommonmark`
+  Closes [#583](https://github.com/PyFilesystem/pyfilesystem2/issues/583)
 
 ## [2.4.16] - 2022-05-02
 
