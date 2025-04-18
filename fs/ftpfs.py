@@ -126,7 +126,7 @@ def _decode(st, _):
 class FTPFile(io.RawIOBase):
     def __init__(self, ftpfs, path, mode):
         # type: (FTPFS, Text, Text) -> None
-        super(FTPFile, self).__init__()
+        super().__init__()
         self.fs = ftpfs
         self.path = path
         self.mode = Mode(mode)
@@ -188,7 +188,7 @@ class FTPFile(io.RawIOBase):
                     except error_temp:  # pragma: no cover
                         pass
                 finally:
-                    super(FTPFile, self).close()
+                    super().close()
 
     def tell(self):
         # type: () -> int
@@ -403,7 +403,7 @@ class FTPFS(FS):
             tls (bool): Attempt to use FTP over TLS (FTPS) (default: False)
 
         """
-        super(FTPFS, self).__init__()
+        super().__init__()
         self._host = host
         self._user = user
         self.passwd = passwd
@@ -691,7 +691,7 @@ class FTPFS(FS):
                     response = self.ftp.sendcmd(cmd)
                     mtime = self._parse_ftp_time(response.split()[1])
                     return epoch_to_datetime(mtime)
-        return super(FTPFS, self).getmodified(path)
+        return super().getmodified(path)
 
     def listdir(self, path):
         # type: (Text) -> List[Text]
@@ -892,4 +892,4 @@ class FTPFS(FS):
             except Exception:  # pragma: no cover
                 pass
             self._ftp = None
-        super(FTPFS, self).close()
+        super().close()

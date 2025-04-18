@@ -1,8 +1,8 @@
 """Functions for moving files between filesystems.
 """
 import typing
+from os.path import commonpath
 
-from ._pathcompat import commonpath
 from .copy import copy_dir, copy_file
 from .errors import FSError
 from .opener import manage_fs

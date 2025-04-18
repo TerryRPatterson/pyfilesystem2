@@ -8,9 +8,9 @@ import os
 import time
 from collections import OrderedDict
 from threading import RLock
+from typing import overload
 
 from . import errors
-from ._typing import overload
 from .base import FS
 from .copy import copy_modified_time
 from .enums import ResourceType, Seek

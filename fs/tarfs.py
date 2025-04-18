@@ -1,7 +1,6 @@
 """Manage the filesystem in a Tar archive."""
 
 import typing
-from typing import IO, cast
 
 import os
 import tarfile
@@ -14,7 +13,6 @@ from .compress import write_tar
 from .enums import ResourceType
 from .errors import IllegalBackReference, NoURL
 from .info import Info
-from .iotools import RawWrapper
 from .opener import open_fs
 from .path import basename, frombase, isbase, normpath, parts, relpath
 from .permissions import Permissions
@@ -408,7 +406,7 @@ class ReadTarFS(FS):
         if not member.isfile():
             raise errors.FileExpected(path)
 
-        rw = RawWrapper(cast(IO, self._tar.extractfile(member)))
+        rw = self._tar.extractfile(member)
 
         return rw  # type: ignore
 

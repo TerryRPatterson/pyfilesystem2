@@ -11,7 +11,7 @@ import os
 import time
 import unittest
 import warnings
-from datetime import datetime
+from datetime import datetime, timezone
 
 import fs.copy
 import fs.move
@@ -20,11 +20,6 @@ from fs.opener import open_fs
 from fs.subfs import ClosingSubFS, SubFS
 
 import collections.abc as collections_abc
-
-try:
-    from datetime import timezone
-except ImportError:
-    from ._tzcompat import timezone  # type: ignore
 
 
 UNICODE_TEXT = """

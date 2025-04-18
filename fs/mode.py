@@ -6,8 +6,6 @@ Mode strings are used in in `~fs.base.FS.open` and
 """
 import typing
 
-from ._typing import Text
-
 if typing.TYPE_CHECKING:
     from typing import FrozenSet, Set, Union
 
@@ -16,7 +14,7 @@ __all__ = ["Mode", "check_readable", "check_writable", "validate_openbin_mode"]
 
 
 # https://docs.python.org/3/library/functions.html#open
-class Mode(typing.Container[Text]):
+class Mode(typing.Container[str]):
     """An abstraction for I/O modes.
 
     A mode object provides properties that can be used to interrogate the
@@ -37,7 +35,7 @@ class Mode(typing.Container[Text]):
     """
 
     def __init__(self, mode):
-        # type: (Text) -> None
+        # type: (str) -> None
         """Create a new `Mode` instance.
 
         Arguments:
@@ -51,21 +49,21 @@ class Mode(typing.Container[Text]):
         self.validate()
 
     def __repr__(self):
-        # type: () -> Text
+        # type: () -> str
         return "Mode({!r})".format(self._mode)
 
     def __str__(self):
-        # type: () -> Text
+        # type: () -> str
         return self._mode
 
     def __contains__(self, character):
         # type: (object) -> bool
         """Check if a mode contains a given character."""
-        assert isinstance(character, Text)
+        assert isinstance(character, str)
         return character in self._mode
 
     def to_platform(self):
-        # type: () -> Text
+        # type: () -> str
         """Get a mode string for the current platform.
 
         Currently, this does nothing.
@@ -75,7 +73,7 @@ class Mode(typing.Container[Text]):
         return self._mode
 
     def to_platform_bin(self):
-        # type: () -> Text
+        # type: () -> str
         """Get a *binary* mode string for the current platform.
 
         This removes the 't' and adds a 'b' if needed.
@@ -85,7 +83,7 @@ class Mode(typing.Container[Text]):
         return _mode if "b" in _mode else _mode + "b"
 
     def validate(self, _valid_chars=frozenset("rwxtab+")):
-        # type: (Union[Set[Text], FrozenSet[Text]]) -> None
+        # type: (Union[Set[str], FrozenSet[str]]) -> None
         """Validate the mode string.
 
         Raises:
@@ -170,7 +168,7 @@ class Mode(typing.Container[Text]):
 
 
 def check_readable(mode):
-    # type: (Text) -> bool
+    # type: (str) -> bool
     """Check a mode string allows reading.
 
     Arguments:
@@ -184,7 +182,7 @@ def check_readable(mode):
 
 
 def check_writable(mode):
-    # type: (Text) -> bool
+    # type: (str) -> bool
     """Check a mode string allows writing.
 
     Arguments:
@@ -198,7 +196,7 @@ def check_writable(mode):
 
 
 def validate_open_mode(mode):
-    # type: (Text) -> None
+    # type: (str) -> None
     """Check ``mode`` parameter of `~fs.base.FS.open` is valid.
 
     Arguments:
@@ -212,7 +210,7 @@ def validate_open_mode(mode):
 
 
 def validate_openbin_mode(mode, _valid_chars=frozenset("rwxab+")):
-    # type: (Text, Union[Set[Text], FrozenSet[Text]]) -> None
+    # type: (str, Union[Set[str], FrozenSet[str]]) -> None
     """Check ``mode`` parameter of `~fs.base.FS.openbin` is valid.
 
     Arguments:

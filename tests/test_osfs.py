@@ -1,7 +1,4 @@
 # coding: utf-8
-import sys
-
-import errno
 import io
 import os
 import shutil
@@ -109,29 +106,6 @@ class TestOSFS(FSTestCases, unittest.TestCase):
         dst_info = self.fs.getinfo("bar/file.txt", namespaces)
         delta = dst_info.modified - src_info.modified
         self.assertAlmostEqual(delta.total_seconds(), 0, places=2)
-
-    @unittest.skipUnless(osfs.sendfile, "sendfile not supported")
-    @unittest.skipIf(
-        sys.version_info >= (3, 8),
-        "the copy function uses sendfile in Python 3.8+, "
-        "making the patched implementation irrelevant",
-    )
-    def test_copy_sendfile(self):
-        # try copying using sendfile
-        with mock.patch.object(osfs, "sendfile") as sendfile:
-            sendfile.side_effect = OSError(errno.ENOSYS, "sendfile not supported")
-            self.test_copy()
-        # check other errors are transmitted
-        self.fs.touch("foo")
-        with mock.patch.object(osfs, "sendfile") as sendfile:
-            sendfile.side_effect = OSError(errno.EWOULDBLOCK)
-            with self.assertRaises(OSError):
-                self.fs.copy("foo", "foo_copy")
-        # check parent exist and is dir
-        with self.assertRaises(errors.ResourceNotFound):
-            self.fs.copy("foo", "spam/eggs")
-        with self.assertRaises(errors.DirectoryExpected):
-            self.fs.copy("foo", "foo_copy/foo")
 
     def test_create(self):
         """Test create=True"""

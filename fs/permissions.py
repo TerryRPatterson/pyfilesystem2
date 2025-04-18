@@ -3,14 +3,12 @@
 import typing
 from typing import Iterable
 
-from ._typing import Text
-
 if typing.TYPE_CHECKING:
     from typing import Iterator, List, Optional, Tuple, Type, Union
 
 
 def make_mode(init):
-    # type: (Union[int, Iterable[Text], None]) -> int
+    # type: (Union[int, Iterable[str], None]) -> int
     """Make a mode integer from an initial value."""
     return Permissions.get_mode(init)
 
@@ -19,7 +17,7 @@ class _PermProperty(object):
     """Creates simple properties to get/set permissions."""
 
     def __init__(self, name):
-        # type: (Text) -> None
+        # type: (str) -> None
         self._name = name
         self.__doc__ = "Boolean for '{}' permission.".format(name)
 
@@ -67,16 +65,16 @@ class Permissions(object):
         ("o_r", 4),
         ("o_w", 2),
         ("o_x", 1),
-    ]  # type: List[Tuple[Text, int]]
-    _LINUX_PERMS_NAMES = [_name for _name, _mask in _LINUX_PERMS]  # type: List[Text]
+    ]  # type: List[Tuple[str, int]]
+    _LINUX_PERMS_NAMES = [_name for _name, _mask in _LINUX_PERMS]  # type: List[str]
 
     def __init__(
         self,
-        names=None,  # type: Optional[Iterable[Text]]
+        names=None,  # type: Optional[Iterable[str]]
         mode=None,  # type: Optional[int]
-        user=None,  # type: Optional[Text]
-        group=None,  # type: Optional[Text]
-        other=None,  # type: Optional[Text]
+        user=None,  # type: Optional[str]
+        group=None,  # type: Optional[str]
+        other=None,  # type: Optional[str]
         sticky=None,  # type: Optional[bool]
         setuid=None,  # type: Optional[bool]
         setguid=None,  # type: Optional[bool]
@@ -116,13 +114,13 @@ class Permissions(object):
             self._perms.add("setguid")
 
     def __repr__(self):
-        # type: () -> Text
+        # type: () -> str
         if not self._perms.issubset(self._LINUX_PERMS_NAMES):
             _perms_str = ", ".join("'{}'".format(p) for p in sorted(self._perms))
             return "Permissions(names=[{}])".format(_perms_str)
 
         def _check(perm, name):
-            # type: (Text, Text) -> Text
+            # type: (str, str) -> str
             return name if perm in self._perms else ""
 
         user = "".join((_check("u_r", "r"), _check("u_w", "w"), _check("u_x", "x")))
@@ -141,11 +139,11 @@ class Permissions(object):
         return "Permissions({})".format(", ".join(args))
 
     def __str__(self):
-        # type: () -> Text
+        # type: () -> str
         return self.as_str()
 
     def __iter__(self):
-        # type: () -> Iterator[Text]
+        # type: () -> Iterator[str]
         return iter(self._perms)
 
     def __contains__(self, permission):
@@ -166,7 +164,7 @@ class Permissions(object):
 
     @classmethod
     def parse(cls, ls):
-        # type: (Text) -> Permissions
+        # type: (str) -> Permissions
         """Parse permissions in Linux notation."""
         user = ls[:3]
         group = ls[3:6]
@@ -175,13 +173,13 @@ class Permissions(object):
 
     @classmethod
     def load(cls, permissions):
-        # type: (List[Text]) -> Permissions
+        # type: (List[str]) -> Permissions
         """Load a serialized permissions object."""
         return cls(names=permissions)
 
     @classmethod
     def create(cls, init=None):
-        # type: (Union[int, Iterable[Text], None]) -> Permissions
+        # type: (Union[int, Iterable[str], None]) -> Permissions
         """Create a permissions object from an initial value.
 
         Arguments:
@@ -212,7 +210,7 @@ class Permissions(object):
 
     @classmethod
     def get_mode(cls, init):
-        # type: (Union[int, Iterable[Text], None]) -> int
+        # type: (Union[int, Iterable[str], None]) -> int
         """Convert an initial value to a mode integer."""
         return cls.create(init).mode
 
@@ -222,12 +220,12 @@ class Permissions(object):
         return Permissions(names=list(self._perms))
 
     def dump(self):
-        # type: () -> List[Text]
+        # type: () -> List[str]
         """Get a list suitable for serialization."""
         return sorted(self._perms)
 
     def as_str(self):
-        # type: () -> Text
+        # type: () -> str
         """Get a Linux-style string representation of permissions."""
         perms = [
             c if name in self._perms else "-"
@@ -275,7 +273,7 @@ class Permissions(object):
     setguid = _PermProperty("setguid")
 
     def add(self, *permissions):
-        # type: (*Text) -> None
+        # type: (*str) -> None
         """Add permission(s).
 
         Arguments:
@@ -286,7 +284,7 @@ class Permissions(object):
         self._perms.update(permissions)
 
     def remove(self, *permissions):
-        # type: (*Text) -> None
+        # type: (*str) -> None
         """Remove permission(s).
 
         Arguments:
@@ -297,7 +295,7 @@ class Permissions(object):
         self._perms.difference_update(permissions)
 
     def check(self, *permissions):
-        # type: (*Text) -> bool
+        # type: (*str) -> bool
         """Check if one or more permissions are enabled.
 
         Arguments:

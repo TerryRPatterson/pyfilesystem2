@@ -4,8 +4,8 @@ import typing
 from typing import cast
 
 from copy import deepcopy
+from typing import overload
 
-from ._typing import Text, overload
 from .enums import ResourceType
 from .errors import MissingInfoNamespace
 from .path import join
@@ -17,7 +17,7 @@ if typing.TYPE_CHECKING:
 
     from datetime import datetime
 
-    RawInfo = Mapping[Text, Mapping[Text, object]]
+    RawInfo = Mapping[str, Mapping[str, object]]
     ToDatetime = Callable[[int], datetime]
     T = typing.TypeVar("T")
 
@@ -80,16 +80,16 @@ class Info(object):
 
     @overload
     def get(self, namespace, key):
-        # type: (Text, Text) -> Any
+        # type: (str, str) -> Any
         pass
 
     @overload  # noqa: F811
     def get(self, namespace, key, default):  # noqa: F811
-        # type: (Text, Text, T) -> Union[Any, T]
+        # type: (str, str, T) -> Union[Any, T]
         pass
 
     def get(self, namespace, key, default=None):  # noqa: F811
-        # type: (Text, Text, Optional[Any]) -> Optional[Any]
+        # type: (str, str, Optional[Any]) -> Optional[Any]
         """Get a raw info value.
 
         Arguments:
@@ -111,7 +111,7 @@ class Info(object):
             return default
 
     def _require_namespace(self, namespace):
-        # type: (Text) -> None
+        # type: (str) -> None
         """Check if the given namespace is present in the info.
 
         Raises:
@@ -123,7 +123,7 @@ class Info(object):
             raise MissingInfoNamespace(namespace)
 
     def is_writeable(self, namespace, key):
-        # type: (Text, Text) -> bool
+        # type: (str, str) -> bool
         """Check if a given key in a namespace is writable.
 
         When creating an `Info` object, you can add a ``_write`` key to
@@ -162,7 +162,7 @@ class Info(object):
         return key in _writeable
 
     def has_namespace(self, namespace):
-        # type: (Text) -> bool
+        # type: (str) -> bool
         """Check if the resource info contains a given namespace.
 
         Arguments:
@@ -180,7 +180,7 @@ class Info(object):
         return Info(deepcopy(self.raw), to_datetime=to_datetime or self._to_datetime)
 
     def make_path(self, dir_path):
-        # type: (Text) -> Text
+        # type: (str) -> str
         """Make a path by joining ``dir_path`` with the resource name.
 
         Arguments:
@@ -194,13 +194,13 @@ class Info(object):
 
     @property
     def name(self):
-        # type: () -> Text
+        # type: () -> str
         """`str`: the resource name."""
-        return cast(Text, self.get("basic", "name"))
+        return cast(str, self.get("basic", "name"))
 
     @property
     def suffix(self):
-        # type: () -> Text
+        # type: () -> str
         """`str`: the last component of the name (with dot).
 
         In case there is no suffix, an empty string is returned.
@@ -222,7 +222,7 @@ class Info(object):
 
     @property
     def suffixes(self):
-        # type: () -> List[Text]
+        # type: () -> List[str]
         """`List`: a list of any suffixes in the name.
 
         Example:
@@ -238,7 +238,7 @@ class Info(object):
 
     @property
     def stem(self):
-        # type: () -> Text
+        # type: () -> str
         """`str`: the name minus any suffixes.
 
         Example:
@@ -386,7 +386,7 @@ class Info(object):
 
     @property
     def user(self):
-        # type: () -> Optional[Text]
+        # type: () -> Optional[str]
         """`str`: the owner of the resource, or `None`.
 
         Requires the ``"access"`` namespace.
@@ -416,7 +416,7 @@ class Info(object):
 
     @property
     def group(self):
-        # type: () -> Optional[Text]
+        # type: () -> Optional[str]
         """`str`: the group of the resource owner, or `None`.
 
         Requires the ``"access"`` namespace.
@@ -446,7 +446,7 @@ class Info(object):
 
     @property
     def target(self):  # noqa: D402
-        # type: () -> Optional[Text]
+        # type: () -> Optional[str]
         """`str`: the link target (if resource is a symlink), or `None`.
 
         Requires the ``"link"`` namespace.

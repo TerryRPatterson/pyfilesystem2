@@ -3,6 +3,7 @@
 In essence, an `OSFS` is a thin layer over the `io` and `os` modules
 of the Python standard library.
 """
+
 import sys
 import typing
 
@@ -16,27 +17,16 @@ import shutil
 import stat
 import tempfile
 
-try:
-    from os import scandir
-except ImportError:
-    try:
-        from scandir import scandir  # type: ignore
-    except ImportError:  # pragma: no cover
-        scandir = None  # type: ignore  # pragma: no cover
+from os import fspath, fsdecode, fsencode, scandir
 
 try:
     from os import sendfile
 except ImportError:
-    try:
-        from sendfile import sendfile  # type: ignore
-    except ImportError:
-        sendfile = None  # type: ignore  # pragma: no cover
+    sendfile = None  # type: ignore  # pragma: no cover
 
 from . import errors
-from ._fscompat import fsdecode, fsencode, fspath
 from ._url_tools import url_quote
 from .base import FS
-from .copy import copy_modified_time
 from .enums import ResourceType
 from .error_tools import convert_os_errors
 from .errors import FileExpected, NoURL
@@ -392,8 +382,6 @@ class OSFS(FS):
             # type: (_O, Text, Optional[_OpendirFactory]) -> SubFS[_O]
             pass
 
-    # --- Backport of os.sendfile for Python < 3.8 -----------
-
     def _check_copy(self, src_path, dst_path, overwrite=False):
         # validate individual paths
         _src_path = self.validatepath(src_path)
@@ -412,147 +400,48 @@ class OSFS(FS):
             raise errors.DirectoryExpected(dirname(dst_path))
         return _src_path, _dst_path
 
-    if sys.version_info[:2] < (3, 8) and sendfile is not None:
+    def copy(self, src_path, dst_path, overwrite=False, preserve_time=False):
+        # type: (Text, Text, bool, bool) -> None
+        with self._lock:
+            _src_path, _dst_path = self._check_copy(src_path, dst_path, overwrite)
+            shutil.copy2(self.getsyspath(_src_path), self.getsyspath(_dst_path))
 
-        _sendfile_error_codes = {
-            errno.EIO,
-            errno.EINVAL,
-            errno.ENOSYS,
-            errno.EBADF,
-            errno.ENOTSOCK,
-            errno.EOPNOTSUPP,
-        }
-
-        # PyPy doesn't define ENOTSUP so we have to add it conditionally.
-        if hasattr(errno, "ENOTSUP"):
-            _sendfile_error_codes.add(errno.ENOTSUP)
-
-        def copy(self, src_path, dst_path, overwrite=False, preserve_time=False):
-            # type: (Text, Text, bool, bool) -> None
-            with self._lock:
-                # validate and canonicalise paths
-                _src_path, _dst_path = self._check_copy(src_path, dst_path, overwrite)
-                _src_sys, _dst_sys = (
-                    self.getsyspath(_src_path),
-                    self.getsyspath(_dst_path),
-                )
-                # attempt using sendfile
-                try:
-                    # initialise variables to pass to sendfile
-                    # open files to obtain a file descriptor
-                    with io.open(_src_sys, "r") as src:
-                        with io.open(_dst_sys, "w") as dst:
-                            fd_src, fd_dst = src.fileno(), dst.fileno()
-                            sent = maxsize = os.fstat(fd_src).st_size
-                            offset = 0
-                            while sent > 0:
-                                sent = sendfile(fd_dst, fd_src, offset, maxsize)
-                                offset += sent
-                    if preserve_time:
-                        copy_modified_time(self, src_path, self, dst_path)
-                except OSError as e:
-                    # the error is not a simple "sendfile not supported" error
-                    if e.errno not in self._sendfile_error_codes:
-                        raise
-                    # fallback using the shutil implementation
-                    shutil.copy2(_src_sys, _dst_sys)
-
-    else:
-
-        def copy(self, src_path, dst_path, overwrite=False, preserve_time=False):
-            # type: (Text, Text, bool, bool) -> None
-            with self._lock:
-                _src_path, _dst_path = self._check_copy(src_path, dst_path, overwrite)
-                shutil.copy2(self.getsyspath(_src_path), self.getsyspath(_dst_path))
-
-    # --- Backport of os.scandir for Python < 3.5 ------------
-
-    if scandir:
-
-        def _scandir(self, path, namespaces=None):
-            # type: (Text, Optional[Collection[Text]]) -> Iterator[Info]
-            self.check()
-            namespaces = namespaces or ()
-            requires_stat = not {"details", "stat", "access"}.isdisjoint(namespaces)
-            _path = self.validatepath(path)
-            if _WINDOWS_PLATFORM:
-                sys_path = os.path.join(
-                    self._root_path, path.lstrip("/").replace("/", os.sep)
-                )
-            else:
-                sys_path = self._to_sys_path(_path)  # type: ignore
-            with convert_os_errors("scandir", path, directory=True):
-                scandir_iter = scandir(sys_path)
-                try:
-                    for dir_entry in scandir_iter:
-                        info = {
-                            "basic": {
-                                "name": fsdecode(dir_entry.name),
-                                "is_dir": dir_entry.is_dir(),
-                            }
-                        }
-                        if requires_stat:
-                            stat_result = dir_entry.stat()
-                            if "details" in namespaces:
-                                info["details"] = self._make_details_from_stat(
-                                    stat_result
-                                )
-                            if "stat" in namespaces:
-                                info["stat"] = {
-                                    k: getattr(stat_result, k)
-                                    for k in dir(stat_result)
-                                    if k.startswith("st_")
-                                }
-                            if "access" in namespaces:
-                                info["access"] = self._make_access_from_stat(
-                                    stat_result
-                                )
-                        if "lstat" in namespaces:
-                            lstat_result = dir_entry.stat(follow_symlinks=False)
-                            info["lstat"] = {
-                                k: getattr(lstat_result, k)
-                                for k in dir(lstat_result)
-                                if k.startswith("st_")
-                            }
-                        if "link" in namespaces:
-                            info["link"] = self._make_link_info(
-                                os.path.join(sys_path, dir_entry.name)
-                            )
-
-                        yield Info(info)
-                finally:
-                    if sys.version_info >= (3, 6):
-                        scandir_iter.close()
-
-    else:
-
-        def _scandir(self, path, namespaces=None):
-            # type: (Text, Optional[Collection[Text]]) -> Iterator[Info]
-            self.check()
-            namespaces = namespaces or ()
-            _path = self.validatepath(path)
-            sys_path = self.getsyspath(_path)
-            with convert_os_errors("scandir", path, directory=True):
-                for entry_name in os.listdir(sys_path):
-                    _entry_name = fsdecode(entry_name)
-                    entry_path = os.path.join(sys_path, _entry_name)
-                    stat_result = os.stat(fsencode(entry_path))
+    def _scandir(self, path, namespaces=None):
+        # type: (Text, Optional[Collection[Text]]) -> Iterator[Info]
+        self.check()
+        namespaces = namespaces or ()
+        requires_stat = not {"details", "stat", "access"}.isdisjoint(namespaces)
+        _path = self.validatepath(path)
+        if _WINDOWS_PLATFORM:
+            sys_path = os.path.join(
+                self._root_path, path.lstrip("/").replace("/", os.sep)
+            )
+        else:
+            sys_path = self._to_sys_path(_path)  # type: ignore
+        with convert_os_errors("scandir", path, directory=True):
+            scandir_iter = scandir(sys_path)
+            try:
+                for dir_entry in scandir_iter:
                     info = {
                         "basic": {
-                            "name": _entry_name,
-                            "is_dir": stat.S_ISDIR(stat_result.st_mode),
+                            "name": fsdecode(dir_entry.name),
+                            "is_dir": dir_entry.is_dir(),
                         }
-                    }  # type: Dict[Text, Dict[Text, Any]]
-                    if "details" in namespaces:
-                        info["details"] = self._make_details_from_stat(stat_result)
-                    if "stat" in namespaces:
-                        info["stat"] = {
-                            k: getattr(stat_result, k)
-                            for k in dir(stat_result)
-                            if k.startswith("st_")
-                        }
+                    }
+                    if requires_stat:
+                        stat_result = dir_entry.stat()
+                        if "details" in namespaces:
+                            info["details"] = self._make_details_from_stat(stat_result)
+                        if "stat" in namespaces:
+                            info["stat"] = {
+                                k: getattr(stat_result, k)
+                                for k in dir(stat_result)
+                                if k.startswith("st_")
+                            }
+                        if "access" in namespaces:
+                            info["access"] = self._make_access_from_stat(stat_result)
                     if "lstat" in namespaces:
-                        lstat_result = os.lstat(entry_path)
+                        lstat_result = dir_entry.stat(follow_symlinks=False)
                         info["lstat"] = {
                             k: getattr(lstat_result, k)
                             for k in dir(lstat_result)
@@ -560,12 +449,13 @@ class OSFS(FS):
                         }
                     if "link" in namespaces:
                         info["link"] = self._make_link_info(
-                            os.path.join(sys_path, entry_name)
+                            os.path.join(sys_path, dir_entry.name)
                         )
-                    if "access" in namespaces:
-                        info["access"] = self._make_access_from_stat(stat_result)
 
                     yield Info(info)
+            finally:
+                if sys.version_info >= (3, 6):
+                    scandir_iter.close()
 
     def scandir(
         self,
