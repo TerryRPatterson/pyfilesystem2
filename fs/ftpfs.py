@@ -1,8 +1,5 @@
 """Manage filesystems on remote FTP servers.
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 
 import array

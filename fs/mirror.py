@@ -15,9 +15,6 @@ you would like to copy any changes. Otherwise you should set the
 the expense of potentially copying extra files.
 
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 
 from ._bulk import Copier

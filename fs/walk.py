@@ -4,9 +4,6 @@
 any sub-directories. It is a fairly common requirement for copying,
 searching etc. See :ref:`walking` for details.
 """
-
-from __future__ import unicode_literals
-
 import typing
 
 from collections import defaultdict, deque, namedtuple

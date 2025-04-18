@@ -1,8 +1,5 @@
 """Miscellaneous tools for operating on filesystems.
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 
 from . import errors

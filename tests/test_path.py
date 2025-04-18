@@ -1,11 +1,7 @@
-from __future__ import absolute_import, print_function, unicode_literals
-
 """
   fstests.test_path:  testcases for the fs path functions
 
 """
-
-
 import unittest
 
 from fs.path import (

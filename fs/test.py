@@ -4,9 +4,6 @@
 All Filesystems should be able to pass these.
 
 """
-
-from __future__ import absolute_import, unicode_literals
-
 import io
 import itertools
 import json

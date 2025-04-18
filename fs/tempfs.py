@@ -8,9 +8,6 @@ A `TempFS` is a good way of preparing a directory structure in advance,
 that you can later copy. It can also be used as a temporary data store.
 
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 
 import shutil

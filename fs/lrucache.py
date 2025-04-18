@@ -1,8 +1,5 @@
 """Least Recently Used cache mapping.
 """
-
-from __future__ import absolute_import, unicode_literals
-
 import typing
 
 from collections import OrderedDict

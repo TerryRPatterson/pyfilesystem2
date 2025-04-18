@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import unittest
 
 from fs.mode import Mode, check_readable, check_writable

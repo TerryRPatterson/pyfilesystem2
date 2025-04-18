@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import unittest
 
 from fs._fscompat import fsdecode, fsencode, fspath

@@ -1,9 +1,6 @@
 # coding: utf-8
 """`Registry` class mapping protocols and FS URLs to their `Opener`.
 """
-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import typing
 
 import collections

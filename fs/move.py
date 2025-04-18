@@ -1,8 +1,5 @@
 """Functions for moving files between filesystems.
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 
 from ._pathcompat import commonpath

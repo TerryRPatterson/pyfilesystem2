@@ -1,8 +1,5 @@
 """Abstract permissions container.
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 from typing import Iterable
 

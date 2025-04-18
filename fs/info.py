@@ -1,8 +1,5 @@
 """Container for filesystem resource informations.
 """
-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import typing
 from typing import cast
 

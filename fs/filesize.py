@@ -10,9 +10,6 @@ See Also:
     * `Wikipedia: Binary prefix <https://en.wikipedia.org/wiki/Binary_prefix>`_
 
 """
-
-from __future__ import division, unicode_literals
-
 import typing
 
 if typing.TYPE_CHECKING:

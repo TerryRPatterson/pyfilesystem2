@@ -1,7 +1,4 @@
 """Test (abstract) base FS class."""
-
-from __future__ import unicode_literals
-
 import unittest
 
 from fs import errors

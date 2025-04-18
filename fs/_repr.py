@@ -1,8 +1,5 @@
 """Tools to generate __repr__ strings.
 """
-
-from __future__ import unicode_literals
-
 import typing
 
 if typing.TYPE_CHECKING:

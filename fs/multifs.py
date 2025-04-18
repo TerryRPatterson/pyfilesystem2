@@ -1,8 +1,5 @@
 """Manage several filesystems through a single view.
 """
-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import typing
 
 from collections import OrderedDict, namedtuple

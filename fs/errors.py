@@ -7,9 +7,6 @@ All Exception classes are derived from `~fs.errors.FSError`
 which may be used as a catch-all filesystem exception.
 
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 
 import functools

@@ -1,8 +1,5 @@
 """Manage a directory in a *parent* filesystem.
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 
 from .path import abspath, join, normpath, relpath

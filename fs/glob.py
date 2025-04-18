@@ -1,8 +1,5 @@
 """Useful functions for working with glob patterns.
 """
-
-from __future__ import unicode_literals
-
 import typing
 from functools import partial
 

@@ -5,9 +5,6 @@ familiarize yourself with this (rather straightforward) API, you
 can work with any of the supported filesystems.
 
 """
-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import typing
 
 import abc

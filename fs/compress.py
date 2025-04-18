@@ -3,9 +3,6 @@
 Currently zip and tar are supported, using the `zipfile` and
 `tarfile` modules from the standard library.
 """
-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import typing
 
 import tarfile

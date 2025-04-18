@@ -7,9 +7,6 @@ separated by forward slashes and with an optional leading slash).
 See :ref:`paths` for an explanation of PyFilesystem paths.
 
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 
 import re

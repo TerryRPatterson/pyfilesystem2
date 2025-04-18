@@ -1,8 +1,5 @@
 """Manage the filesystem in a Zip archive.
 """
-
-from __future__ import print_function, unicode_literals
-
 import sys
 import typing
 

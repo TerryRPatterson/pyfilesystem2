@@ -1,8 +1,5 @@
 """Manage other filesystems as a folder hierarchy.
 """
-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import typing
 
 from . import errors

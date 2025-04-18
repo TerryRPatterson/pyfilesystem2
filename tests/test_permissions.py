@@ -1,5 +1,3 @@
-from __future__ import print_function, unicode_literals
-
 import unittest
 
 from fs.permissions import Permissions, make_mode

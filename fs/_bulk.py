@@ -3,9 +3,6 @@
 Implements a thread pool for parallel copying of files.
 
 """
-
-from __future__ import unicode_literals
-
 import typing
 
 import threading

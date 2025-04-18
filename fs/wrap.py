@@ -10,9 +10,6 @@ Here's an example that opens a filesystem then makes it *read only*::
     fs.errors.ResourceReadOnly: resource 'Desktop' is read only
 
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 
 from .errors import ResourceNotFound, ResourceReadOnly

@@ -1,8 +1,5 @@
 """Manage the filesystem in a Tar archive.
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 from typing import IO, cast
 

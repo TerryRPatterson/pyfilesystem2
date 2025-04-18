@@ -4,9 +4,6 @@ Mode strings are used in in `~fs.base.FS.open` and
 `~fs.base.FS.openbin`.
 
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 
 from ._typing import Text

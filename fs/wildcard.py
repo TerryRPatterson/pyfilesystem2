@@ -1,9 +1,6 @@
 """Match wildcard filenames.
 """
 # Adapted from https://hg.python.org/cpython/file/2.7/Lib/fnmatch.py
-
-from __future__ import print_function, unicode_literals
-
 import typing
 
 import re

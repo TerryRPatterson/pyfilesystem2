@@ -1,5 +1,3 @@
-from __future__ import unicode_literals
-
 import unittest
 
 from fs.memoryfs import MemoryFS

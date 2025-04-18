@@ -1,8 +1,5 @@
 """Functions for copying resources *between* filesystem.
 """
-
-from __future__ import print_function, unicode_literals
-
 import typing
 
 import warnings

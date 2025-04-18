@@ -1,8 +1,5 @@
 """Function to parse FS URLs in to their constituent parts.
 """
-
-from __future__ import absolute_import, print_function, unicode_literals
-
 import typing
 
 import collections
