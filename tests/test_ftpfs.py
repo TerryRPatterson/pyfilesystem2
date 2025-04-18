@@ -147,7 +147,7 @@ class TestFTPFS(FSTestCases, unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        from pyftpdlib.test import ThreadedTestFTPd
+        from pyftpdlib.test import FtpdThreadWrapper
 
         super(TestFTPFS, cls).setUpClass()
 
@@ -155,7 +155,7 @@ class TestFTPFS(FSTestCases, unittest.TestCase):
         cls._temp_path = os.path.join(cls._temp_dir, str(uuid.uuid4()))
         os.mkdir(cls._temp_path)
 
-        cls.server = ThreadedTestFTPd()
+        cls.server = FtpdThreadWrapper()
         cls.server.shutdown_after = -1
         cls.server.handler.authorizer = DummyAuthorizer()
         cls.server.handler.authorizer.add_user(
@@ -337,7 +337,7 @@ class TestAnonFTPFS(FSTestCases, unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        from pyftpdlib.test import ThreadedTestFTPd
+        from pyftpdlib.test import FtpdThreadWrapper
 
         super(TestAnonFTPFS, cls).setUpClass()
 
@@ -345,7 +345,7 @@ class TestAnonFTPFS(FSTestCases, unittest.TestCase):
         cls._temp_path = os.path.join(cls._temp_dir, str(uuid.uuid4()))
         os.mkdir(cls._temp_path)
 
-        cls.server = ThreadedTestFTPd()
+        cls.server = FtpdThreadWrapper()
         cls.server.shutdown_after = -1
         cls.server.handler.authorizer = DummyAuthorizer()
         cls.server.handler.authorizer.add_anonymous(cls._temp_path, perm="elradfmw")

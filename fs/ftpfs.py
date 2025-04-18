@@ -415,7 +415,7 @@ class FTPFS(FS):
         self.tls = tls
 
         if self.tls and isinstance(FTP_TLS, Exception):
-            raise_from(errors.CreateFailed("FTP over TLS not supported"), FTP_TLS)
+            raise errors.CreateFailed("FTP over TLS not supported") from FTP_TLS
 
         self.encoding = "latin-1"
         self._ftp = None  # type: Optional[FTP]
