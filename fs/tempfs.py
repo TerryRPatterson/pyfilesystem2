@@ -14,7 +14,6 @@ from __future__ import print_function, unicode_literals
 import typing
 
 import shutil
-import six
 import tempfile
 
 from . import errors
@@ -24,7 +23,6 @@ if typing.TYPE_CHECKING:
     from typing import Optional, Text
 
 
-@six.python_2_unicode_compatible
 class TempFS(OSFS):
     """A temporary filesystem on the OS.
 

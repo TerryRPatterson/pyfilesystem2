@@ -1,9 +1,4 @@
-import six
-
-try:
-    from os import fsdecode, fsencode
-except ImportError:
-    from backports.os import fsdecode, fsencode  # type: ignore
+from os import fsdecode, fsencode
 
 try:
     from os import fspath
@@ -17,7 +12,7 @@ except ImportError:
         path representation is not str or bytes, TypeError is raised. If the
         provided path is not str, bytes, or os.PathLike, TypeError is raised.
         """
-        if isinstance(path, (six.text_type, bytes)):
+        if isinstance(path, (str, bytes)):
             return path
 
         # Work from the object's type to match method resolution of other magic
@@ -33,7 +28,7 @@ except ImportError:
                     "expected string type or os.PathLike object, "
                     "not " + path_type.__name__
                 )
-        if isinstance(path_repr, (six.text_type, bytes)):
+        if isinstance(path_repr, (str, bytes)):
             return path_repr
         else:
             raise TypeError(

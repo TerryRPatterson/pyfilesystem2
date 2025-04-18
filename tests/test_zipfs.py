@@ -4,10 +4,10 @@ from __future__ import unicode_literals
 import sys
 
 import os
-import six
 import tempfile
 import unittest
 import zipfile
+from io import BytesIO
 
 from fs import zipfs
 from fs.compress import write_zip
@@ -36,7 +36,7 @@ class TestWriteReadZipFS(unittest.TestCase):
         with zipfs.ZipFS(self._temp_path) as zip_fs:
             paths = list(zip_fs.walk.files())
             for path in paths:
-                self.assertIsInstance(path, six.text_type)
+                self.assertIsInstance(path, str)
                 with zip_fs.openbin(path) as f:
                     f.read()
 
@@ -177,7 +177,7 @@ class TestReadZipFS(ArchiveTestCases, unittest.TestCase):
         self.assertEqual(self.fs.geturl(test_file, purpose="fs"), expected)
 
     def test_geturl_for_fs_but_file_is_binaryio(self):
-        self.fs._file = six.BytesIO()
+        self.fs._file = BytesIO()
         self.assertRaises(NoURL, self.fs.geturl, "test", "fs")
 
     def test_geturl_for_download(self):

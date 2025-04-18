@@ -5,8 +5,6 @@ from __future__ import unicode_literals
 
 import typing
 
-import six
-
 from . import errors
 from .base import FS
 from .copy import copy_dir, copy_file
@@ -49,7 +47,6 @@ _F = typing.TypeVar("_F", bound="FS", covariant=True)
 _W = typing.TypeVar("_W", bound="WrapFS[FS]")
 
 
-@six.python_2_unicode_compatible
 class WrapFS(FS, typing.Generic[_F]):
     """A proxy for a filesystem object.
 

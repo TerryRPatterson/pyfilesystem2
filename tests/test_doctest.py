@@ -17,8 +17,6 @@ try:
 except ImportError:
     import mock
 
-import six
-
 import fs
 import fs.opener.parse
 from fs.memoryfs import MemoryFS
@@ -104,12 +102,6 @@ def _load_tests_from_module(tests, module, globs, setUp=None, tearDown=None):
 
 def _load_tests(loader, tests, ignore):
     """`load_test` function used by unittest to find the doctests."""
-
-    # NB (@althonos): we only test docstrings on Python 3 because it's
-    # extremely hard to maintain compatibility for both versions without
-    # extensively hacking `doctest` and `unittest`.
-    if six.PY2:
-        return tests
 
     def setUp(self):
         warnings.simplefilter("ignore")

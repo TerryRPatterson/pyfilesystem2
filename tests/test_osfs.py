@@ -11,7 +11,6 @@ import tempfile
 import time
 import unittest
 import warnings
-from six import text_type
 
 from fs import errors, open_fs, osfs
 from fs.path import dirname, relpath
@@ -75,12 +74,12 @@ class TestOSFS(FSTestCases, unittest.TestCase):
         self.assertIsInstance(data, bytes)
 
     def assert_text(self, path, contents):
-        assert isinstance(contents, text_type)
+        assert isinstance(contents, str)
         _path = self._get_real_path(path)
         with io.open(_path, "rt", encoding="utf-8") as f:
             data = f.read()
         self.assertEqual(data, contents)
-        self.assertIsInstance(data, text_type)
+        self.assertIsInstance(data, str)
 
     def test_not_exists(self):
         with self.assertRaises(errors.CreateFailed):

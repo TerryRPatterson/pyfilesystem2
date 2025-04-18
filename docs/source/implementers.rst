@@ -28,9 +28,7 @@ You aren't *required* to use ``_lock``. Just as long as calling methods on the F
 Python Versions
 ---------------
 
-PyFilesystem supports Python2.7 and Python3.X. The differences between the two major Python versions are largely managed by the ``six`` library.
-
-You aren't obligated to support the same versions of Python that PyFilesystem itself supports, but it is recommended if your project is for general use.
+PyFilesystem supports Python3.X.
 
 
 Testing Filesystems

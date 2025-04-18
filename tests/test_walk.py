@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-import six
 import unittest
 
 from fs import walk
@@ -373,12 +372,12 @@ class TestFiles(TestBoundWalkerBase):
         base_fs.writetext("b/d", "d")
         base_walker = base_fs.walk
         self.assertEqual(base_walker.walker_class, CustomWalker)
-        six.assertCountEqual(self, ["/a", "/b/c", "/b/d"], base_walker.files())
+        self.assertCountEqual(["/a", "/b/c", "/b/d"], base_walker.files())
 
         sub_fs = base_fs.opendir("b")
         sub_walker = sub_fs.walk
         self.assertEqual(sub_walker.walker_class, CustomWalker)
-        six.assertCountEqual(self, ["/c", "/d"], sub_walker.files())
+        self.assertCountEqual(["/c", "/d"], sub_walker.files())
 
     def test_check_file_overwrite(self):
         class CustomWalker(walk.Walker):

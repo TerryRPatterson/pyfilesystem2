@@ -12,6 +12,8 @@ import time
 import unittest
 import uuid
 
+from io import BytesIO
+
 try:
     from unittest import mock
 except ImportError:
@@ -19,7 +21,6 @@ except ImportError:
 
 from ftplib import error_perm, error_temp
 from pyftpdlib.authorizers import DummyAuthorizer
-from six import BytesIO, text_type
 
 from fs import errors
 from fs.ftpfs import FTPFS, ftp_errors
@@ -151,7 +152,7 @@ class TestFTPFS(FSTestCases, unittest.TestCase):
         super(TestFTPFS, cls).setUpClass()
 
         cls._temp_dir = tempfile.mkdtemp("ftpfs2tests")
-        cls._temp_path = os.path.join(cls._temp_dir, text_type(uuid.uuid4()))
+        cls._temp_path = os.path.join(cls._temp_dir, str(uuid.uuid4()))
         os.mkdir(cls._temp_path)
 
         cls.server = ThreadedTestFTPd()
@@ -341,7 +342,7 @@ class TestAnonFTPFS(FSTestCases, unittest.TestCase):
         super(TestAnonFTPFS, cls).setUpClass()
 
         cls._temp_dir = tempfile.mkdtemp("ftpfs2tests")
-        cls._temp_path = os.path.join(cls._temp_dir, text_type(uuid.uuid4()))
+        cls._temp_path = os.path.join(cls._temp_dir, str(uuid.uuid4()))
         os.mkdir(cls._temp_path)
 
         cls.server = ThreadedTestFTPd()

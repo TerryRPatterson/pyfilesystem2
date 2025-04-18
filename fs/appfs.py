@@ -12,7 +12,6 @@ subclasses of `~fs.osfs.OSFS`.
 import typing
 
 import abc
-import six
 from appdirs import AppDirs
 
 from ._repr import make_repr
@@ -47,8 +46,7 @@ class _CopyInitMeta(abc.ABCMeta):
         return super(abc.ABCMeta, mcls).__new__(mcls, classname, bases, cls_dict)
 
 
-@six.add_metaclass(_CopyInitMeta)
-class _AppFS(OSFS):
+class _AppFS(OSFS, metaclass=_CopyInitMeta):
     """Abstract base class for an app FS."""
 
     # FIXME(@althonos): replace by ClassVar[Text] once

@@ -6,8 +6,6 @@ from __future__ import print_function, unicode_literals
 import typing
 from typing import Iterable
 
-import six
-
 from ._typing import Text
 
 if typing.TYPE_CHECKING:
@@ -40,7 +38,6 @@ class _PermProperty(object):
             obj.remove(self._name)
 
 
-@six.python_2_unicode_compatible
 class Permissions(object):
     """An abstraction for file system permissions.
 

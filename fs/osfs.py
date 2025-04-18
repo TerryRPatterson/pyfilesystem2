@@ -16,7 +16,6 @@ import logging
 import os
 import platform
 import shutil
-import six
 import stat
 import tempfile
 
@@ -77,7 +76,6 @@ log = logging.getLogger("fs.osfs")
 _WINDOWS_PLATFORM = platform.system() == "Windows"
 
 
-@six.python_2_unicode_compatible
 class OSFS(FS):
     """Create an OSFS.
 
@@ -161,7 +159,7 @@ class OSFS(FS):
 
         if _WINDOWS_PLATFORM:  # pragma: no cover
             _meta["invalid_path_chars"] = (
-                "".join(six.unichr(n) for n in range(31)) + '\\:*?"<>|'
+                "".join(chr(n) for n in range(31)) + '\\:*?"<>|'
             )
         else:
             _meta["invalid_path_chars"] = "\0"
@@ -351,8 +349,6 @@ class OSFS(FS):
             raise errors.FileExpected(path)
         sys_path = self._to_sys_path(_path)
         with convert_os_errors("openbin", path):
-            if six.PY2 and _mode.exclusive:
-                sys_path = os.open(sys_path, os.O_RDWR | os.O_CREAT | os.O_EXCL)
             binary_file = io.open(
                 sys_path, mode=_mode.to_platform_bin(), buffering=buffering, **options
             )
@@ -644,8 +640,6 @@ class OSFS(FS):
             raise FileExpected(path)
         sys_path = self._to_sys_path(_path)
         with convert_os_errors("open", path):
-            if six.PY2 and _mode.exclusive:
-                sys_path = os.open(sys_path, os.O_RDWR | os.O_CREAT | os.O_EXCL)
             _encoding = encoding or "utf-8"
             return io.open(
                 sys_path,

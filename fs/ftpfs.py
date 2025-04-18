@@ -23,7 +23,6 @@ except ImportError as err:
 from typing import cast
 
 from ftplib import error_perm, error_temp
-from six import PY2, raise_from, text_type
 
 from . import _ftp_parse as ftp_parse
 from . import errors
@@ -112,29 +111,17 @@ def manage_ftp(ftp):
 def _parse_ftp_error(error):
     # type: (ftplib.Error) -> Tuple[Text, Text]
     """Extract code and message from ftp error."""
-    code, _, message = text_type(error).partition(" ")
+    code, _, message = str(error).partition(" ")
     return code, message
 
 
-if PY2:
+def _encode(st, _):
+    # type: (str, str) -> str
+    return st
 
-    def _encode(st, encoding):
-        # type: (Union[Text, bytes], Text) -> str
-        return st.encode(encoding) if isinstance(st, text_type) else st
-
-    def _decode(st, encoding):
-        # type: (Union[Text, bytes], Text) -> Text
-        return st.decode(encoding, "replace") if isinstance(st, bytes) else st
-
-else:
-
-    def _encode(st, _):
-        # type: (str, str) -> str
-        return st
-
-    def _decode(st, _):
-        # type: (str, str) -> str
-        return st
+def _decode(st, _):
+    # type: (str, str) -> str
+    return st
 
 
 class FTPFile(io.RawIOBase):
@@ -488,10 +475,9 @@ class FTPFS(FS):
             else:
                 self._features = self._parse_features(feat_response)
                 self.encoding = "utf-8" if "UTF8" in self._features else "latin-1"
-                if not PY2:
-                    _ftp.file = _ftp.sock.makefile(  # type: ignore
-                        "r", encoding=self.encoding
-                    )
+                _ftp.file = _ftp.sock.makefile(  # type: ignore
+                    "r", encoding=self.encoding
+                )
         _ftp.encoding = self.encoding
         self._welcome = _ftp.welcome
         return _ftp

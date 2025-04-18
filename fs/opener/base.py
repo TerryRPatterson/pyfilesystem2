@@ -5,7 +5,6 @@
 import typing
 
 import abc
-import six
 
 if typing.TYPE_CHECKING:
     from typing import List, Text
@@ -14,8 +13,7 @@ if typing.TYPE_CHECKING:
     from .parse import ParseResult
 
 
-@six.add_metaclass(abc.ABCMeta)
-class Opener(object):
+class Opener(object, metaclass=abc.ABCMeta):
     """The base class for filesystem openers.
 
     An opener is responsible for opening a filesystem for a given

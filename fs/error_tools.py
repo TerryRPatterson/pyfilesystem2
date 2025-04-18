@@ -9,7 +9,6 @@ import typing
 import errno
 import platform
 from contextlib import contextmanager
-from six import reraise
 
 from . import errors
 
@@ -86,7 +85,8 @@ class _ConvertOSErrors(object):
             if _errno == errno.EACCES and sys.platform == "win32":
                 if getattr(exc_value, "args", None) == 32:  # pragma: no cover
                     fserror = errors.ResourceLocked
-            reraise(fserror, fserror(self._path, exc=exc_value), traceback)
+
+            raise fserror(self._path, exc=exc_value).with_traceback(traceback)
 
 
 # Stops linter complaining about invalid class name

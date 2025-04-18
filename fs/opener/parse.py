@@ -7,8 +7,7 @@ import typing
 
 import collections
 import re
-import six
-from six.moves.urllib.parse import parse_qs, unquote
+from urllib.parse import parse_qs, unquote
 
 from .errors import ParseError
 
@@ -89,7 +88,7 @@ def parse_fs_url(fs_url):
     resource = unquote(url)
     if has_qs:
         _params = parse_qs(qs, keep_blank_values=True)
-        params = {k: unquote(v[0]) for k, v in six.iteritems(_params)}
+        params = {k: unquote(v[0]) for k, v in _params.items()}
     else:
         params = {}
     return ParseResult(fs_name, username, password, resource, params, path)

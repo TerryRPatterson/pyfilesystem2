@@ -7,7 +7,6 @@ import typing
 
 from collections import OrderedDict, namedtuple
 from operator import itemgetter
-from six import text_type
 
 from . import errors
 from .base import FS
@@ -99,7 +98,7 @@ class MultiFS(FS):
                 filesystem will be looked at first.
 
         """
-        if isinstance(fs, text_type):
+        if isinstance(fs, str):
             fs = open_fs(fs)
 
         if not isinstance(fs, FS):

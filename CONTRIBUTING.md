@@ -57,10 +57,7 @@ $ python -m unittest discover -vv
 
 ## Coding Guidelines
 
-This project runs on Python2.7 and Python3.X. Python2.7 will be dropped at
-some point, but for now, please maintain compatibility. PyFilesystem2 uses
-the [`six`](https://pypi.org/project/six/) library to write version-agnostic
-Python code.
+This project runs on Python3.X.
 
 ### Style
 

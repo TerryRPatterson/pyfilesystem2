@@ -7,7 +7,6 @@ import typing
 from typing import IO, cast
 
 import os
-import six
 import tarfile
 from collections import OrderedDict
 
@@ -48,19 +47,12 @@ if typing.TYPE_CHECKING:
 __all__ = ["TarFS", "WriteTarFS", "ReadTarFS"]
 
 
-if six.PY2:
 
-    def _get_member_info(member, encoding):
-        # type: (TarInfo, Text) -> Dict[Text, object]
-        return member.get_info(encoding, None)
-
-else:
-
-    def _get_member_info(member, encoding):
-        # type: (TarInfo, Text) -> Dict[Text, object]
-        # NOTE(@althonos): TarInfo.get_info is neither in the doc nor
-        #     in the `tarfile` stub, and yet it exists and is public !
-        return member.get_info()  # type: ignore
+def _get_member_info(member, encoding):
+    # type: (TarInfo, Text) -> Dict[Text, object]
+    # NOTE(@althonos): TarInfo.get_info is neither in the doc nor
+    #     in the `tarfile` stub, and yet it exists and is public !
+    return member.get_info()  # type: ignore
 
 
 class TarFS(WrapFS):
@@ -122,7 +114,7 @@ class TarFS(WrapFS):
         temp_fs="temp://__tartemp__",  # type: Union[Text, FS]
     ):
         # type: (...) -> FS
-        if isinstance(file, (six.text_type, six.binary_type)):
+        if isinstance(file, (str, bytes)):
             file = os.path.expanduser(file)
             filename = file  # type: Text
         else:
@@ -130,7 +122,7 @@ class TarFS(WrapFS):
 
         if write and compression is None:
             compression = None
-            for comp, extensions in six.iteritems(cls._compression_formats):
+            for comp, extensions in cls._compression_formats.items():
                 if filename.endswith(extensions):
                     compression = comp
                     break
@@ -156,7 +148,6 @@ class TarFS(WrapFS):
             pass
 
 
-@six.python_2_unicode_compatible
 class WriteTarFS(WrapFS):
     """A writable tar file."""
 
@@ -233,7 +224,6 @@ class WriteTarFS(WrapFS):
             )
 
 
-@six.python_2_unicode_compatible
 class ReadTarFS(FS):
     """A readable tar file."""
 
@@ -265,7 +255,7 @@ class ReadTarFS(FS):
         super(ReadTarFS, self).__init__()
         self._file = file
         self.encoding = encoding
-        if isinstance(file, (six.text_type, six.binary_type)):
+        if isinstance(file, (str, bytes)):
             self._tar = tarfile.open(file, mode="r")
         else:
             self._tar = tarfile.open(fileobj=file, mode="r")
@@ -303,25 +293,14 @@ class ReadTarFS(FS):
         # type: () -> Text
         return "<TarFS '{}'>".format(self._file)
 
-    if six.PY2:
 
-        def _encode(self, s):
-            # type: (Text) -> str
-            return s.encode(self.encoding)
+    def _encode(self, s):
+        # type: (Text) -> str
+        return s
 
-        def _decode(self, s):
-            # type: (str) -> Text
-            return s.decode(self.encoding)
-
-    else:
-
-        def _encode(self, s):
-            # type: (Text) -> str
-            return s
-
-        def _decode(self, s):
-            # type: (str) -> Text
-            return s
+    def _decode(self, s):
+        # type: (str) -> Text
+        return s
 
     def getinfo(self, path, namespaces=None):
         # type: (Text, Optional[Collection[Text]]) -> Info
@@ -429,19 +408,12 @@ class ReadTarFS(FS):
         try:
             member = self._directory_entries[_path]
         except KeyError:
-            six.raise_from(errors.ResourceNotFound(path), None)
+            raise errors.ResourceNotFound(path) from None
 
         if not member.isfile():
             raise errors.FileExpected(path)
 
         rw = RawWrapper(cast(IO, self._tar.extractfile(member)))
-
-        if six.PY2:  # Patch nonexistent file.flush in Python2
-
-            def _flush():
-                pass
-
-            rw.flush = _flush
 
         return rw  # type: ignore
 
@@ -467,7 +439,7 @@ class ReadTarFS(FS):
 
     def geturl(self, path, purpose="download"):
         # type: (Text, Text) -> Text
-        if purpose == "fs" and isinstance(self._file, six.string_types):
+        if purpose == "fs" and isinstance(self._file, str):
             quoted_file = url_quote(self._file)
             quoted_path = url_quote(path)
             return "tar://{}!/{}".format(quoted_file, quoted_path)

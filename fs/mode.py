@@ -9,8 +9,6 @@ from __future__ import print_function, unicode_literals
 
 import typing
 
-import six
-
 from ._typing import Text
 
 if typing.TYPE_CHECKING:
@@ -21,7 +19,6 @@ __all__ = ["Mode", "check_readable", "check_writable", "validate_openbin_mode"]
 
 
 # https://docs.python.org/3/library/functions.html#open
-@six.python_2_unicode_compatible
 class Mode(typing.Container[Text]):
     """An abstraction for I/O modes.
 
@@ -74,11 +71,11 @@ class Mode(typing.Container[Text]):
         # type: () -> Text
         """Get a mode string for the current platform.
 
-        Currently, this just removes the 'x' on PY2 because PY2 doesn't
-        support exclusive mode.
+        Currently, this does nothing.
+        It used to be used for python2 support
 
         """
-        return self._mode.replace("x", "w") if six.PY2 else self._mode
+        return self._mode
 
     def to_platform_bin(self):
         # type: () -> Text

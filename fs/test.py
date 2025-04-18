@@ -11,12 +11,10 @@ import io
 import itertools
 import json
 import os
-import six
 import time
 import unittest
 import warnings
 from datetime import datetime
-from six import text_type
 
 import fs.copy
 import fs.move
@@ -24,10 +22,7 @@ from fs import ResourceType, Seek, errors, glob, walk
 from fs.opener import open_fs
 from fs.subfs import ClosingSubFS, SubFS
 
-if six.PY2:
-    import collections as collections_abc
-else:
-    import collections.abc as collections_abc
+import collections.abc as collections_abc
 
 try:
     from datetime import timezone
@@ -338,11 +333,11 @@ class FSTestCases(object):
             contents (str): Text to compare.
 
         """
-        assert isinstance(contents, text_type)
+        assert isinstance(contents, str)
         with self.fs.open(path, "rt") as f:
             data = f.read()
         self.assertEqual(data, contents)
-        self.assertIsInstance(data, text_type)
+        self.assertIsInstance(data, str)
 
     def test_root_dir(self):
         with self.assertRaises(errors.FileExpected):
@@ -369,7 +364,7 @@ class FSTestCases(object):
     def test_basic(self):
         #  Check str and repr don't break
         repr(self.fs)
-        self.assertIsInstance(six.text_type(self.fs), six.text_type)
+        self.assertIsInstance(str(self.fs), str)
 
     def test_getmeta(self):
         # Get the meta dict
@@ -422,7 +417,7 @@ class FSTestCases(object):
         except errors.NoSysPath:
             self.assertFalse(self.fs.hassyspath("foo"))
         else:
-            self.assertIsInstance(syspath, text_type)
+            self.assertIsInstance(syspath, str)
             self.assertIsInstance(self.fs.getospath("foo"), bytes)
             self.assertTrue(self.fs.hassyspath("foo"))
         # Should not throw an error
@@ -473,7 +468,7 @@ class FSTestCases(object):
         # Check basic namespace
         info = self.fs.getinfo("foo").raw
         self.assertIn("basic", info)
-        self.assertIsInstance(info["basic"]["name"], text_type)
+        self.assertIsInstance(info["basic"]["name"], str)
         self.assertEqual(info["basic"]["name"], "foo")
         self.assertFalse(info["basic"]["is_dir"])
 
@@ -577,13 +572,13 @@ class FSTestCases(object):
         self.fs.writebytes("baz/egg", b"egg")
 
         # Check list works
-        six.assertCountEqual(self, self.fs.listdir("/"), ["foo", "bar", "baz"])
-        six.assertCountEqual(self, self.fs.listdir("."), ["foo", "bar", "baz"])
-        six.assertCountEqual(self, self.fs.listdir("./"), ["foo", "bar", "baz"])
+        self.assertCountEqual(self.fs.listdir("/"), ["foo", "bar", "baz"])
+        self.assertCountEqual(self.fs.listdir("."), ["foo", "bar", "baz"])
+        self.assertCountEqual(self.fs.listdir("./"), ["foo", "bar", "baz"])
 
         # Check paths are unicode strings
         for name in self.fs.listdir("/"):
-            self.assertIsInstance(name, text_type)
+            self.assertIsInstance(name, str)
 
         # Create a subdirectory
         self.fs.makedir("dir")
@@ -596,10 +591,10 @@ class FSTestCases(object):
         self.fs.writebytes("dir/barbar", b"egg")
 
         # Check listing subdirectory
-        six.assertCountEqual(self, self.fs.listdir("dir"), ["foofoo", "barbar"])
+        self.assertCountEqual(self.fs.listdir("dir"), ["foofoo", "barbar"])
         # Make sure they are unicode stringd
         for name in self.fs.listdir("dir"):
-            self.assertIsInstance(name, text_type)
+            self.assertIsInstance(name, str)
 
         self.fs.create("notadir")
         with self.assertRaises(errors.DirectoryExpected):
@@ -845,7 +840,7 @@ class FSTestCases(object):
 
         with self.fs.open("text", "w") as f:
             repr(f)
-            text_type(f)
+            str(f)
             self.assertIsInstance(f, io.IOBase)
             self.assertTrue(f.writable())
             self.assertFalse(f.readable())
@@ -864,7 +859,7 @@ class FSTestCases(object):
 
         with self.fs.open("text", "r") as f:
             repr(f)
-            text_type(f)
+            str(f)
             self.assertIsInstance(f, io.IOBase)
             self.assertFalse(f.writable())
             self.assertTrue(f.readable())
@@ -946,7 +941,7 @@ class FSTestCases(object):
         # Write a binary file
         with self.fs.openbin("file.bin", "wb") as write_file:
             repr(write_file)
-            text_type(write_file)
+            str(write_file)
             self.assertIn("b", write_file.mode)
             self.assertIsInstance(write_file, io.IOBase)
             self.assertTrue(write_file.writable())
@@ -958,7 +953,7 @@ class FSTestCases(object):
         # Read a binary file
         with self.fs.openbin("file.bin", "rb") as read_file:
             repr(write_file)
-            text_type(write_file)
+            str(write_file)
             self.assertIn("b", read_file.mode)
             self.assertIsInstance(read_file, io.IOBase)
             self.assertTrue(read_file.readable())
@@ -1025,8 +1020,8 @@ class FSTestCases(object):
         # Open a sub directory
         with self.fs.opendir("foo") as foo_fs:
             repr(foo_fs)
-            text_type(foo_fs)
-            six.assertCountEqual(self, foo_fs.listdir("/"), ["bar", "egg"])
+            str(foo_fs)
+            self.assertCountEqual(foo_fs.listdir("/"), ["bar", "egg"])
             self.assertTrue(foo_fs.isfile("bar"))
             self.assertTrue(foo_fs.isfile("egg"))
             self.assertEqual(foo_fs.readbytes("bar"), b"barbar")
@@ -1048,7 +1043,7 @@ class FSTestCases(object):
 
         # Check ClosingSubFS closes 'parent'
         with self.fs.opendir("foo", factory=ClosingSubFS) as foo_fs:
-            six.assertCountEqual(self, foo_fs.listdir("/"), ["bar", "egg"])
+            self.assertCountEqual(foo_fs.listdir("/"), ["bar", "egg"])
             self.assertTrue(foo_fs.isfile("bar"))
             self.assertTrue(foo_fs.isfile("egg"))
             self.assertEqual(foo_fs.readbytes("bar"), b"barbar")
@@ -1082,8 +1077,7 @@ class FSTestCases(object):
         self.fs.makedirs("foo/bar/baz/")
 
         error_msg = "resource 'foo/bar/egg/test.txt' not found"
-        assertRaisesRegex = getattr(self, "assertRaisesRegex", self.assertRaisesRegexp)
-        with assertRaisesRegex(errors.ResourceNotFound, error_msg):
+        with self.assertRaisesRegex(errors.ResourceNotFound, error_msg):
             self.fs.remove("foo/bar/egg/test.txt")
 
     def test_removedir(self):
@@ -1329,7 +1323,7 @@ class FSTestCases(object):
         # Describe a file
         self.fs.create("foo")
         description = self.fs.desc("foo")
-        self.assertIsInstance(description, text_type)
+        self.assertIsInstance(description, str)
 
         # Describe a dir
         self.fs.makedir("dir")
@@ -1459,7 +1453,7 @@ class FSTestCases(object):
 
     def test_readbytes(self):
         # Test readbytes method.
-        all_bytes = b"".join(six.int2byte(n) for n in range(256))
+        all_bytes = bytes(range(256))
         with self.fs.open("foo", "wb") as f:
             f.write(all_bytes)
         self.assertEqual(self.fs.readbytes("foo"), all_bytes)
@@ -1502,7 +1496,7 @@ class FSTestCases(object):
         self.assertTrue(self.fs.isempty("/foo"))
 
     def test_writebytes(self):
-        all_bytes = b"".join(six.int2byte(n) for n in range(256))
+        all_bytes = bytes(range(256))
         self.fs.writebytes("foo", all_bytes)
         with self.fs.open("foo", "rb") as f:
             _bytes = f.read()
@@ -1517,7 +1511,7 @@ class FSTestCases(object):
         with self.fs.open("foo/unicode.txt", "wt") as f:
             f.write(UNICODE_TEXT)
         text = self.fs.readtext("foo/unicode.txt")
-        self.assertIsInstance(text, text_type)
+        self.assertIsInstance(text, str)
         self.assertEqual(text, UNICODE_TEXT)
         self.assert_text("foo/unicode.txt", UNICODE_TEXT)
 
@@ -1527,7 +1521,7 @@ class FSTestCases(object):
         with self.fs.open("foo", "rt") as f:
             foo = f.read()
         self.assertEqual(foo, "bar")
-        self.assertIsInstance(foo, text_type)
+        self.assertIsInstance(foo, str)
         with self.assertRaises(TypeError):
             self.fs.writetext("nottext", b"bytes")
 
@@ -1560,7 +1554,7 @@ class FSTestCases(object):
     def test_bin_files(self):
         # Check binary files.
         with self.fs.openbin("foo1", "wb") as f:
-            text_type(f)
+            str(f)
             repr(f)
             f.write(b"a")
             f.write(b"b")
@@ -1603,7 +1597,7 @@ class FSTestCases(object):
         # Test multiple writes
 
         with self.fs.open("foo1", "wt") as f:
-            text_type(f)
+            str(f)
             repr(f)
             f.write("a")
             f.write("b")

@@ -2,7 +2,7 @@ import typing
 
 import platform
 import re
-import six
+from urllib import request
 
 if typing.TYPE_CHECKING:
     from typing import Text
@@ -24,14 +24,10 @@ def url_quote(path_snippet):
     """
     if _WINDOWS_PLATFORM and _has_drive_letter(path_snippet):
         drive_letter, path = path_snippet.split(":", 1)
-        if six.PY2:
-            path = path.encode("utf-8")
-        path = six.moves.urllib.request.pathname2url(path)
+        path = request.pathname2url(path)
         path_snippet = "{}:{}".format(drive_letter, path)
     else:
-        if six.PY2:
-            path_snippet = path_snippet.encode("utf-8")
-        path_snippet = six.moves.urllib.request.pathname2url(path_snippet)
+        path_snippet = request.pathname2url(path_snippet)
     return path_snippet
 
 

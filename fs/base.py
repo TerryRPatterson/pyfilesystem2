@@ -14,7 +14,6 @@ import abc
 import hashlib
 import itertools
 import os
-import six
 import threading
 import time
 import warnings
@@ -93,8 +92,7 @@ def _new_name(method, old_name):
     return _method
 
 
-@six.add_metaclass(abc.ABCMeta)
-class FS(object):
+class FS(object, metaclass=abc.ABCMeta):
     """Base class for FS objects."""
 
     # This is the "standard" meta namespace.
@@ -364,7 +362,7 @@ class FS(object):
                 ``path`` does not exist.
 
         """
-        if not isinstance(text, six.text_type):
+        if not isinstance(text, str):
             raise TypeError("must be unicode string")
         with self._lock:
             with self.open(
@@ -1531,7 +1529,7 @@ class FS(object):
             TypeError: if ``contents`` is not a unicode string.
 
         """
-        if not isinstance(contents, six.text_type):
+        if not isinstance(contents, str):
             raise TypeError("contents must be unicode")
         with closing(
             self.open(
@@ -1586,15 +1584,11 @@ class FS(object):
         self.check()
 
         if isinstance(path, bytes):
-            raise TypeError(
-                "paths must be unicode (not str)"
-                if six.PY2
-                else "paths must be str (not bytes)"
-            )
+            raise TypeError("paths must be str (not bytes)")
 
         meta = self.getmeta()
 
-        invalid_chars = typing.cast(six.text_type, meta.get("invalid_path_chars"))
+        invalid_chars = typing.cast(str, meta.get("invalid_path_chars"))
         if invalid_chars:
             if set(path).intersection(invalid_chars):
                 raise errors.InvalidCharsInPath(path)
@@ -1707,7 +1701,7 @@ class FS(object):
         """
         if patterns is None:
             return True
-        if isinstance(patterns, six.text_type):
+        if isinstance(patterns, str):
             raise TypeError("patterns must be a list or sequence")
         case_sensitive = not typing.cast(
             bool, self.getmeta().get("case_insensitive", False)
@@ -1762,7 +1756,7 @@ class FS(object):
             return True
         if not path or path[0] != "/":
             raise ValueError("%s needs to be a string starting with /" % path)
-        if isinstance(patterns, six.text_type):
+        if isinstance(patterns, str):
             raise TypeError("patterns must be a list or sequence")
         case_sensitive = not typing.cast(
             bool, self.getmeta().get("case_insensitive", False)

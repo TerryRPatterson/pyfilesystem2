@@ -5,8 +5,6 @@ from __future__ import print_function, unicode_literals
 
 import typing
 
-import six
-
 from .path import abspath, join, normpath, relpath
 from .wrapfs import WrapFS
 
@@ -19,7 +17,6 @@ if typing.TYPE_CHECKING:
 _F = typing.TypeVar("_F", bound="FS", covariant=True)
 
 
-@six.python_2_unicode_compatible
 class SubFS(WrapFS[_F], typing.Generic[_F]):
     """A sub-directory on a parent filesystem.
 

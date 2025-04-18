@@ -8,7 +8,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import typing
 
-import six
 import tarfile
 import time
 import zipfile
@@ -61,9 +60,6 @@ def write_zip(
             # Zip names must be relative, directory names must end
             # with a slash.
             zip_name = relpath(path + "/" if info.is_dir else path)
-            if not six.PY3:
-                # Python2 expects bytes filenames
-                zip_name = zip_name.encode(encoding, "replace")
 
             if info.has_namespace("stat"):
                 # If the file has a stat namespace, get the
@@ -141,7 +137,7 @@ def write_tar(
     tar_attr = [("uid", "uid"), ("gid", "gid"), ("uname", "user"), ("gname", "group")]
 
     mode = "w:{}".format(compression or "")
-    if isinstance(file, (six.text_type, six.binary_type)):
+    if isinstance(file, (str, bytes)):
         _tar = tarfile.open(file, mode=mode)
     else:
         _tar = tarfile.open(fileobj=file, mode=mode)
@@ -153,10 +149,6 @@ def write_tar(
         for path, info in gen_walk:
             # Tar names must be relative
             tar_name = relpath(path)
-            if not six.PY3:
-                # Python2 expects bytes filenames
-                tar_name = tar_name.encode(encoding, "replace")
-
             tar_info = tarfile.TarInfo(tar_name)
 
             if info.has_namespace("stat"):

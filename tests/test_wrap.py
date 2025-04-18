@@ -3,12 +3,12 @@ from __future__ import unicode_literals
 import operator
 import unittest
 
+from io import BytesIO, StringIO
+
 try:
     from unittest import mock
 except ImportError:
     import mock
-
-import six
 
 import fs.copy
 import fs.errors
@@ -82,10 +82,10 @@ class TestWrapReadOnly(unittest.TestCase):
         self.assertReadOnly(self.ro.touch, "foo")
 
     def test_upload(self):
-        self.assertReadOnly(self.ro.upload, "foo", six.BytesIO())
+        self.assertReadOnly(self.ro.upload, "foo", BytesIO())
 
     def test_writefile(self):
-        self.assertReadOnly(self.ro.writefile, "foo", six.StringIO())
+        self.assertReadOnly(self.ro.writefile, "foo", StringIO())
 
     def test_openbin_r(self):
         self.fs.writebytes("file", b"read me")

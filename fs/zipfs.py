@@ -6,7 +6,6 @@ from __future__ import print_function, unicode_literals
 import sys
 import typing
 
-import six
 import zipfile
 from datetime import datetime
 
@@ -253,7 +252,6 @@ class ZipFS(WrapFS):
             pass
 
 
-@six.python_2_unicode_compatible
 class WriteZipFS(WrapFS):
     """A writable zip file."""
 
@@ -330,7 +328,6 @@ class WriteZipFS(WrapFS):
             )
 
 
-@six.python_2_unicode_compatible
 class ReadZipFS(FS):
     """A readable zip file."""
 
@@ -367,8 +364,6 @@ class ReadZipFS(FS):
         path = relpath(normpath(path))
         if self._directory.isdir(path):
             path = forcedir(path)
-        if six.PY2:
-            return path.encode(self.encoding)
         return path
 
     @property
@@ -381,8 +376,6 @@ class ReadZipFS(FS):
                 self._directory_fs = _fs = MemoryFS()
                 for zip_name in self._zip.namelist():
                     resource_name = zip_name
-                    if six.PY2:
-                        resource_name = resource_name.decode(self.encoding, "replace")
                     if resource_name.endswith("/"):
                         _fs.makedirs(resource_name, recreate=True)
                     else:
@@ -503,7 +496,7 @@ class ReadZipFS(FS):
 
     def geturl(self, path, purpose="download"):
         # type: (Text, Text) -> Text
-        if purpose == "fs" and isinstance(self._file, six.string_types):
+        if purpose == "fs" and isinstance(self._file, str):
             quoted_file = url_quote(self._file)
             quoted_path = url_quote(path)
             return "zip://{}!/{}".format(quoted_file, quoted_path)

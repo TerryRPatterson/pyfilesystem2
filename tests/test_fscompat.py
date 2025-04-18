@@ -1,6 +1,5 @@
 from __future__ import unicode_literals
 
-import six
 import unittest
 
 from fs._fscompat import fsdecode, fsencode, fspath
@@ -54,8 +53,8 @@ class TestFSCompact(unittest.TestCase):
 
     def test_fsdecode(self):
         decode_text = fsdecode(b"foo")
-        assert isinstance(decode_text, six.text_type)
+        assert isinstance(decode_text, str)
         decode_text = fsdecode("foo")
-        assert isinstance(decode_text, six.text_type)
+        assert isinstance(decode_text, str)
         with self.assertRaises(TypeError):
             fsdecode(5)

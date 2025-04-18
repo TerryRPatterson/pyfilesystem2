@@ -6,7 +6,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 import typing
 from typing import cast
 
-import six
 from copy import deepcopy
 
 from ._typing import Text, overload
@@ -26,7 +25,6 @@ if typing.TYPE_CHECKING:
     T = typing.TypeVar("T")
 
 
-@six.python_2_unicode_compatible
 class Info(object):
     """Container for :ref:`info`.
 

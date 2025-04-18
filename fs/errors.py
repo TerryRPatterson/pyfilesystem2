@@ -13,8 +13,6 @@ from __future__ import print_function, unicode_literals
 import typing
 
 import functools
-import six
-from six import text_type
 
 if typing.TYPE_CHECKING:
     from typing import Optional, Text
@@ -69,7 +67,6 @@ class MissingInfoNamespace(AttributeError):
         return type(self), (self.namespace,)
 
 
-@six.python_2_unicode_compatible
 class FSError(Exception):
     """Base exception for the `fs` module."""
 
@@ -116,7 +113,7 @@ class CreateFailed(FSError):
     def __init__(self, msg=None, exc=None):  # noqa: D107
         # type: (Optional[Text], Optional[Exception]) -> None
         self._msg = msg or self.default_message
-        self.details = "" if exc is None else text_type(exc)
+        self.details = "" if exc is None else str(exc)
         self.exc = exc
 
     @classmethod
@@ -197,7 +194,7 @@ class OperationFailed(FSError):
         # type: (...) -> None
         self.path = path
         self.exc = exc
-        self.details = "" if exc is None else text_type(exc)
+        self.details = "" if exc is None else str(exc)
         self.errno = getattr(exc, "errno", None)
         super(OperationFailed, self).__init__(msg=msg)
 

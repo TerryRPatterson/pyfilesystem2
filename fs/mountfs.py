@@ -5,8 +5,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import typing
 
-from six import text_type
-
 from . import errors
 from .base import FS
 from .memoryfs import MemoryFS
@@ -104,7 +102,7 @@ class MountFS(FS):
             fs (FS or str): A filesystem (instance or URL) to mount.
 
         """
-        if isinstance(fs, text_type):
+        if isinstance(fs, str):
             from .opener import open_fs
 
             fs = open_fs(fs)

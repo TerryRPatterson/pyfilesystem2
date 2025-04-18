@@ -1,9 +1,6 @@
 # -*- encoding: UTF-8
-from __future__ import unicode_literals
-
 import os
 import stat
-from six import text_type
 
 from fs import errors, walk
 from fs.enums import ResourceType
@@ -49,7 +46,7 @@ class ArchiveTestCases(object):
         repr(self.fs)
 
     def test_str(self):
-        self.assertIsInstance(text_type(self.fs), text_type)
+        self.assertIsInstance(str(self.fs), str)
 
     def test_readonly(self):
         with self.assertRaises(errors.ResourceReadOnly):
@@ -95,7 +92,7 @@ class ArchiveTestCases(object):
             sorted(self.source_fs.listdir("/")), sorted(self.fs.listdir("/"))
         )
         for name in self.fs.listdir("/"):
-            self.assertIsInstance(name, text_type)
+            self.assertIsInstance(name, str)
         with self.assertRaises(errors.DirectoryExpected):
             self.fs.listdir("top.txt")
         with self.assertRaises(errors.ResourceNotFound):

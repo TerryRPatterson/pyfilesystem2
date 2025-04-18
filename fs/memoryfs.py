@@ -7,7 +7,6 @@ import typing
 import contextlib
 import io
 import os
-import six
 import time
 from collections import OrderedDict
 from threading import RLock
@@ -48,7 +47,6 @@ if typing.TYPE_CHECKING:
     _M = typing.TypeVar("_M", bound="MemoryFS")
 
 
-@six.python_2_unicode_compatible
 class _MemoryFile(io.RawIOBase):
     def __init__(self, path, memory_fs, mode, dir_entry):
         # type: (Text, MemoryFS, Text, _DirEntry) -> None
@@ -315,7 +313,6 @@ class _DirEntry(object):
         return Info(info)
 
 
-@six.python_2_unicode_compatible
 class MemoryFS(FS):
     """A filesystem that stored in memory.
 
