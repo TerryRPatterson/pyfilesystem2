@@ -1,5 +1,5 @@
-"""Manage the filesystem in a Tar archive.
-"""
+"""Manage the filesystem in a Tar archive."""
+
 import typing
 from typing import IO, cast
 
@@ -42,7 +42,6 @@ if typing.TYPE_CHECKING:
 
 
 __all__ = ["TarFS", "WriteTarFS", "ReadTarFS"]
-
 
 
 def _get_member_info(member, encoding):
@@ -289,7 +288,6 @@ class ReadTarFS(FS):
     def __str__(self):
         # type: () -> Text
         return "<TarFS '{}'>".format(self._file)
-
 
     def _encode(self, s):
         # type: (Text) -> str

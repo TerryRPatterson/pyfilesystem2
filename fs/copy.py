@@ -1,8 +1,6 @@
-"""Functions for copying resources *between* filesystem.
-"""
-import typing
+"""Functions for copying resources *between* filesystem."""
 
-import warnings
+import typing
 
 from .errors import IllegalDestination, ResourceNotFound
 from .opener import manage_fs
@@ -46,29 +44,6 @@ def copy_fs(
     """
     return copy_fs_if(
         src_fs, dst_fs, "always", walker, on_copy, workers, preserve_time=preserve_time
-    )
-
-
-def copy_fs_if_newer(
-    src_fs,  # type: Union[FS, Text]
-    dst_fs,  # type: Union[FS, Text]
-    walker=None,  # type: Optional[Walker]
-    on_copy=None,  # type: Optional[_OnCopy]
-    workers=0,  # type: int
-    preserve_time=False,  # type: bool
-):
-    # type: (...) -> None
-    """Copy the contents of one filesystem to another, checking times.
-
-    .. deprecated:: 2.5.0
-       Use `~fs.copy.copy_fs_if` with ``condition="newer"`` instead.
-
-    """
-    warnings.warn(
-        "copy_fs_if_newer is deprecated. Use copy_fs_if instead.", DeprecationWarning
-    )
-    return copy_fs_if(
-        src_fs, dst_fs, "newer", walker, on_copy, workers, preserve_time=preserve_time
     )
 
 
@@ -140,29 +115,6 @@ def copy_file(
     """
     copy_file_if(
         src_fs, src_path, dst_fs, dst_path, "always", preserve_time=preserve_time
-    )
-
-
-def copy_file_if_newer(
-    src_fs,  # type: Union[FS, Text]
-    src_path,  # type: Text
-    dst_fs,  # type: Union[FS, Text]
-    dst_path,  # type: Text
-    preserve_time=False,  # type: bool
-):
-    # type: (...) -> bool
-    """Copy a file from one filesystem to another, checking times.
-
-    .. deprecated:: 2.5.0
-       Use `~fs.copy.copy_file_if` with ``condition="newer"`` instead.
-
-    """
-    warnings.warn(
-        "copy_file_if_newer is deprecated. Use copy_file_if instead.",
-        DeprecationWarning,
-    )
-    return copy_file_if(
-        src_fs, src_path, dst_fs, dst_path, "newer", preserve_time=preserve_time
     )
 
 
@@ -357,39 +309,6 @@ def copy_dir(
         dst_fs,
         dst_path,
         "always",
-        walker,
-        on_copy,
-        workers,
-        preserve_time=preserve_time,
-    )
-
-
-def copy_dir_if_newer(
-    src_fs,  # type: Union[FS, Text]
-    src_path,  # type: Text
-    dst_fs,  # type: Union[FS, Text]
-    dst_path,  # type: Text
-    walker=None,  # type: Optional[Walker]
-    on_copy=None,  # type: Optional[_OnCopy]
-    workers=0,  # type: int
-    preserve_time=False,  # type: bool
-):
-    # type: (...) -> None
-    """Copy a directory from one filesystem to another, checking times.
-
-    .. deprecated:: 2.5.0
-       Use `~fs.copy.copy_dir_if` with ``condition="newer"`` instead.
-
-    """
-    warnings.warn(
-        "copy_dir_if_newer is deprecated. Use copy_dir_if instead.", DeprecationWarning
-    )
-    copy_dir_if(
-        src_fs,
-        src_path,
-        dst_fs,
-        dst_path,
-        "newer",
         walker,
         on_copy,
         workers,

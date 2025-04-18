@@ -631,8 +631,6 @@ class FS(object, metaclass=abc.ABCMeta):
             contents = read_file.read()
         return contents
 
-    getbytes = _new_name(readbytes, "getbytes")
-
     def download(self, path, file, chunk_size=None, **options):
         # type: (Text, BinaryIO, Optional[int], **Any) -> None
         """Copy a file from the filesystem to a file-like object.
@@ -666,8 +664,6 @@ class FS(object, metaclass=abc.ABCMeta):
             with self.openbin(path, **options) as read_file:
                 tools.copy_file_data(read_file, file, chunk_size=chunk_size)
 
-    getfile = _new_name(download, "getfile")
-
     def readtext(
         self,
         path,  # type: Text
@@ -699,8 +695,6 @@ class FS(object, metaclass=abc.ABCMeta):
         ) as read_file:
             contents = read_file.read()
         return contents
-
-    gettext = _new_name(readtext, "gettext")
 
     def getmodified(self, path):
         # type: (Text) -> Optional[datetime]
@@ -1393,8 +1387,6 @@ class FS(object, metaclass=abc.ABCMeta):
         with closing(self.open(path, mode="wb")) as write_file:
             write_file.write(contents)
 
-    setbytes = _new_name(writebytes, "setbytes")
-
     def upload(self, path, file, chunk_size=None, **options):
         # type: (Text, BinaryIO, Optional[int], **Any) -> None
         """Set a file to the contents of a binary file object.
@@ -1429,8 +1421,6 @@ class FS(object, metaclass=abc.ABCMeta):
         with self._lock:
             with self.openbin(path, mode="wb", **options) as dst_file:
                 tools.copy_file_data(file, dst_file, chunk_size=chunk_size)
-
-    setbinfile = _new_name(upload, "setbinfile")
 
     def writefile(
         self,
@@ -1473,8 +1463,6 @@ class FS(object, metaclass=abc.ABCMeta):
                 path, mode=mode, encoding=encoding, errors=errors, newline=newline
             ) as dst_file:
                 tools.copy_file_data(file, dst_file)
-
-    setfile = _new_name(writefile, "setfile")
 
     def settimes(self, path, accessed=None, modified=None):
         # type: (Text, Optional[datetime], Optional[datetime]) -> None
@@ -1534,8 +1522,6 @@ class FS(object, metaclass=abc.ABCMeta):
             )
         ) as write_file:
             write_file.write(contents)
-
-    settext = _new_name(writetext, "settext")
 
     def touch(self, path):
         # type: (Text) -> None
@@ -1608,32 +1594,6 @@ class FS(object, metaclass=abc.ABCMeta):
     # Helper methods                                                   #
     # Filesystems should not implement these methods.                  #
     # ---------------------------------------------------------------- #
-
-    def getbasic(self, path):
-        # type: (Text) -> Info
-        """Get the *basic* resource info.
-
-        This method is shorthand for the following::
-
-            fs.getinfo(path, namespaces=['basic'])
-
-        Arguments:
-            path (str): A path on the filesystem.
-
-        Returns:
-            ~fs.info.Info: Resource information object for ``path``.
-
-        Note:
-            .. deprecated:: 2.4.13
-                Please use `~FS.getinfo` directly, which is
-                required to always return the *basic* namespace.
-
-        """
-        warnings.warn(
-            "method 'getbasic' has been deprecated, please use 'getinfo'",
-            DeprecationWarning,
-        )
-        return self.getinfo(path, namespaces=["basic"])
 
     def getdetails(self, path):
         # type: (Text) -> Info

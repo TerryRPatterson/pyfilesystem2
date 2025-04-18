@@ -1,5 +1,5 @@
-"""Manage filesystems on remote FTP servers.
-"""
+"""Manage filesystems on remote FTP servers."""
+
 import typing
 
 import array
@@ -115,6 +115,7 @@ def _parse_ftp_error(error):
 def _encode(st, _):
     # type: (str, str) -> str
     return st
+
 
 def _decode(st, _):
     # type: (str, str) -> str
