@@ -1,12 +1,7 @@
 import re
 import time
 import unicodedata
-from datetime import datetime
-
-try:
-    from datetime import timezone
-except ImportError:
-    from ._tzcompat import timezone  # type: ignore
+from datetime import datetime, timezone
 
 from .enums import ResourceType
 from .permissions import Permissions
@@ -83,15 +78,25 @@ def parse_line(line):
 
 def _parse_time(t, formats):
     for frmt in formats:
+        # We MUST pass a year to strptime to correctly handle leap days.
+        # Furthermore not having a year in the format is deprecated
+        if "%Y" not in frmt:
+            current_year = time.localtime().tm_year
+            corrected_t = f"{current_year} {t}"
+            corrected_frmt = f"%Y {frmt}"
+        else:
+            corrected_t = t
+            corrected_frmt = frmt
+
         try:
-            _t = time.strptime(t, frmt)
+            _t = time.strptime(corrected_t, corrected_frmt)
             break
         except ValueError:
             continue
     else:
         return None
 
-    year = _t.tm_year if _t.tm_year != 1900 else time.localtime().tm_year
+    year = _t.tm_year
     month = _t.tm_mon
     day = _t.tm_mday
     hour = _t.tm_hour

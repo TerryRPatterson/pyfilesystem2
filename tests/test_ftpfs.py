@@ -328,6 +328,7 @@ class TestFTPFSNoMLSD(TestFTPFS):
 
 
 @mark.slow
+@mark.filterwarnings("ignore:.*write permissions assigned to anonymous user*")
 @unittest.skipIf(platform.python_implementation() == "PyPy", "ftp unreliable with PyPy")
 class TestAnonFTPFS(FSTestCases, unittest.TestCase):
     user = "anonymous"

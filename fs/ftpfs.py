@@ -9,6 +9,7 @@ import io
 import itertools
 import socket
 import threading
+from datetime import timezone
 from collections import OrderedDict
 from contextlib import contextmanager
 from ftplib import FTP
@@ -849,7 +850,9 @@ class FTPFS(FS):
             with ftp_errors(self, path):
                 cmd = (
                     "MFMT "
-                    + datetime.datetime.utcfromtimestamp(mtime).strftime("%Y%m%d%H%M%S")
+                    + datetime.datetime.fromtimestamp(mtime, timezone.utc).strftime(
+                        "%Y%m%d%H%M%S"
+                    )
                     + " "
                     + _encode(path, self.ftp.encoding)
                 )
