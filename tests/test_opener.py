@@ -18,10 +18,7 @@ try:
 except ImportError:
     import mock
 
-if sys.version_info >= (3, 8):
-    import importlib.metadata
-else:
-    import pkg_resources
+import importlib.metadata
 
 
 class TestParse(unittest.TestCase):
@@ -125,11 +122,15 @@ class TestRegistry(unittest.TestCase):
             patch = mock.patch("importlib.metadata.entry_points", m)
         else:
             extensions = [
-                pkg_resources.EntryPoint("proto1", "mod1"),
-                pkg_resources.EntryPoint("proto2", "mod2"),
+                importlib.metadata.EntryPoint("proto1", "mod1", "fs.opener"),
+                importlib.metadata.EntryPoint("proto2", "mod2", "fs.opener"),
             ]
+
+            if sys.version_info < (3, 10):
+                extensions = {"fs.opener": extensions}
+
             m = mock.MagicMock(return_value=extensions)
-            patch = mock.patch("pkg_resources.iter_entry_points", m)
+            patch = mock.patch("importlib.metadata.entry_points", m)
 
         with patch:
             self.assertIn("proto1", opener.registry.protocols)
@@ -147,13 +148,13 @@ class TestRegistry(unittest.TestCase):
 
         if sys.version_info >= (3, 8):
             if sys.version_info >= (3, 10):
-                entry_points = mock.MagicMock(return_value=tuple([entry_point]))
+                entry_points = mock.MagicMock(return_value=(entry_point,))
             else:
                 entry_points = mock.MagicMock(return_value={"fs.opener": [entry_point]})
             patch = mock.patch("importlib.metadata.entry_points", entry_points)
         else:
             iter_entry_points = mock.MagicMock(return_value=iter([entry_point]))
-            patch = mock.patch("pkg_resources.iter_entry_points", iter_entry_points)
+            patch = mock.patch("importlib.metadata.entry_points", iter_entry_points)
         with patch:
             with self.assertRaises(errors.EntryPointError) as ctx:
                 opener.open_fs("test://")
@@ -171,13 +172,13 @@ class TestRegistry(unittest.TestCase):
 
         if sys.version_info >= (3, 8):
             if sys.version_info >= (3, 10):
-                entry_points = mock.MagicMock(return_value=tuple([entry_point]))
+                entry_points = mock.MagicMock(return_value=(entry_point,))
             else:
                 entry_points = mock.MagicMock(return_value={"fs.opener": [entry_point]})
             patch = mock.patch("importlib.metadata.entry_points", entry_points)
         else:
             iter_entry_points = mock.MagicMock(return_value=iter([entry_point]))
-            patch = mock.patch("pkg_resources.iter_entry_points", iter_entry_points)
+            patch = mock.patch("importlib.metadata.entry_points", iter_entry_points)
         with patch:
             with self.assertRaises(errors.EntryPointError) as ctx:
                 opener.open_fs("test://")
@@ -197,13 +198,13 @@ class TestRegistry(unittest.TestCase):
 
         if sys.version_info >= (3, 8):
             if sys.version_info >= (3, 10):
-                entry_points = mock.MagicMock(return_value=tuple([entry_point]))
+                entry_points = mock.MagicMock(return_value=(entry_point,))
             else:
                 entry_points = mock.MagicMock(return_value={"fs.opener": [entry_point]})
             patch = mock.patch("importlib.metadata.entry_points", entry_points)
         else:
             iter_entry_points = mock.MagicMock(return_value=iter([entry_point]))
-            patch = mock.patch("pkg_resources.iter_entry_points", iter_entry_points)
+            patch = mock.patch("importlib.metadata.entry_points", iter_entry_points)
 
         with patch:
             with self.assertRaises(errors.EntryPointError) as ctx:
@@ -254,12 +255,6 @@ class TestOpeners(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.tmpdir)
-
-    def test_repr(self):
-        # Check __repr__ works
-        for entry_point in pkg_resources.iter_entry_points("fs.opener"):
-            _opener = entry_point.load()
-            repr(_opener())
 
     def test_open_osfs(self):
         fs = opener.open_fs("osfs://.")

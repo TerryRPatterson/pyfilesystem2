@@ -6,6 +6,7 @@ import typing
 import collections
 import contextlib
 import sys
+import importlib.metadata
 
 from ..errors import ResourceReadOnly
 from .base import Opener
@@ -18,28 +19,19 @@ if typing.TYPE_CHECKING:
     from ..base import FS
 
 
-if sys.version_info >= (3, 8):
-    import importlib.metadata
+if sys.version_info >= (3, 10):
 
-    if sys.version_info >= (3, 10):
-
-        def entrypoints(group, name=None):
-            ep = importlib.metadata.entry_points(group=group, name=name)
-            return tuple(n for n in ep)
-
-    else:
-
-        def entrypoints(group, name=None):
-            ep = importlib.metadata.entry_points()
-            if name:
-                return tuple(n for n in ep.get(group, ()) if n.name == name)
-            return ep.get(group, ())
+    def _entrypoints(group, name=None):
+        ep = importlib.metadata.entry_points(group=group, name=name)
+        return tuple(n for n in ep)
 
 else:
-    import pkg_resources
 
-    def entrypoints(group, name=None):
-        return tuple(pkg_resources.iter_entry_points(group, name))
+    def _entrypoints(group, name=None):
+        ep = importlib.metadata.entry_points()
+        if name:
+            return tuple(n for n in ep.get(group, ()) if n.name == name)
+        return ep.get(group, ())
 
 
 class Registry(object):
@@ -95,7 +87,7 @@ class Registry(object):
         """`list`: the list of supported protocols."""
         _protocols = list(self._protocols)
         if self.load_extern:
-            _protocols.extend(n.name for n in entrypoints("fs.opener"))
+            _protocols.extend(n.name for n in _entrypoints("fs.opener"))
             _protocols = list(collections.OrderedDict.fromkeys(_protocols))
         return _protocols
 
@@ -119,7 +111,7 @@ class Registry(object):
         """
         protocol = protocol or self.default_opener
 
-        ep = entrypoints("fs.opener", protocol)
+        ep = _entrypoints("fs.opener", protocol)
         if self.load_extern and ep:
             entry_point = ep[0]
         else:
